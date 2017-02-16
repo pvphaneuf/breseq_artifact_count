@@ -1,0 +1,3 @@
+[submodule "gdparse"]
+	path = gdparse
+	url = https://github.com/SBRG/gdparse.git
