@@ -8,6 +8,7 @@ BRESEQ_OUTPUT_DIR = "output"
 BRESEQ_OUTPUT_HTML = "index.html"
 BRESEQ_OUTPUT_LOG = "log.txt"
 BRESEQ_LOG_OUTPUT_NAME_FLAG = "-o"
+BRESEQ_MUT_TR_TAG = "normal_table_row"
 
 
 def main(argv):
@@ -26,9 +27,29 @@ def main(argv):
         if opt in ("-i", "--input"):
             parent_dir = arg
 
+    sample_artf_count_dict = {}
     if parent_dir != "":
         sample_dir_list = get_dir_list(parent_dir)
         sample_html_path_dict = get_sample_html_path_dict(sample_dir_list)
+        for sample in sample_html_path_dict.keys():
+            sample_artf_count_dict[sample] = get_sample_artf_count_dict(sample_html_path_dict[sample])
+
+
+def get_sample_artf_count_dict(sample_html_path):
+    sample_artf_count_dict = {}
+    soup_html = get_beautifulsoup_html(sample_html_path)
+    all_table_row_list = soup_html.find_all('tr')
+    mutation_count = 0
+    for table_row in all_table_row_list:
+        if BRESEQ_MUT_TR_TAG in str(table_row):
+            mutation_count += 1
+    return sample_artf_count_dict
+
+
+def get_beautifulsoup_html(sample_html_path):
+    with open(sample_html_path) as infile:
+        bs_html_file = BeautifulSoup(infile, "html.parser")
+    return bs_html_file
 
 
 def get_dir_list(parent_dir):
